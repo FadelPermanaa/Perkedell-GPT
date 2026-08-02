@@ -315,18 +315,31 @@ html, body {
   white-space: pre-wrap;
 }
 
+.message.user {
+  display: flex;
+  justify-content: flex-end;
+}
 .message.user .bubble {
-  background: var(--cyan-light);
-  color: var(--text-main);
-  padding: 10px 14px;
-  border-radius: 14px;
+  background: var(--cyan);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 18px 18px 4px 18px;
   display: inline-block;
   max-width: 80%;
-  float: right;
 }
 
+.message.assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 .message.assistant .bubble {
-  padding: 4px 0;
+  background: #f3f4f6;
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: 18px 18px 18px 4px;
+  display: inline-block;
+  max-width: 80%;
 }
 
 .message.assistant .role-label {
@@ -335,6 +348,7 @@ html, body {
   color: var(--cyan-dark);
   display: block;
   margin-bottom: 4px;
+  margin-left: 4px;
 }
 
 .typing {
