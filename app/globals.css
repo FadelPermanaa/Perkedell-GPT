@@ -21,8 +21,10 @@ html, body {
 
 .app {
   display: flex;
-  height: 100vh;
+  height: 100dvh; /* dvh lebih akurat di handphone, ikut ukuran viewport yang sebenarnya */
+  height: 100vh;  /* fallback untuk browser lama */
   background: var(--bg-main);
+  overflow: hidden;
 }
 
 /* ===== SIDEBAR ===== */
@@ -264,6 +266,7 @@ html, body {
   flex-direction: column;
   background: var(--bg-main);
   min-width: 0;
+  overflow: hidden; /* biar yang keluar dari layar nggak bikin page jadi scroll panjang */
 }
 
 .top-bar {
@@ -289,6 +292,7 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-height: 0; /* penting: biar flex child bisa 'nyusut' dan input bar tetap kelihatan */
 }
 
 .empty-state {
@@ -373,6 +377,8 @@ html, body {
 .input-bar-wrapper {
   border-top: 1px solid var(--border);
   padding: 16px 24px 20px;
+  flex-shrink: 0; /* biar nggak ke-tekan sama isi chat */
+  background: var(--bg-main);
 }
 
 .input-bar {
