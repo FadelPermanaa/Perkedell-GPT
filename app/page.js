@@ -274,7 +274,7 @@ export default function Home() {
           {!currentConv || currentConv.messages.length === 0 ? (
             <div className="empty-state">
               <div className="empty-icon">✦</div>
-              <div>Saya siap kapan pun Anda siap.</div>
+              <div>Sapaann aku selalu kangen sama kamu, sayang 💖<br/>Apa yang bisa aku temani hari ini, bebu?</div>
             </div>
           ) : (
             currentConv.messages.map((m, i) => (
