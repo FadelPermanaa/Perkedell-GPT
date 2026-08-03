@@ -206,6 +206,11 @@ export default function Home() {
   return (
     <div className="app">
       {sidebarOpen && (
+        <>
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setSidebarOpen(false)}
+        />
         <aside className="sidebar">
           <div className="sidebar-header">
             <div className="brand">
@@ -258,6 +263,7 @@ export default function Home() {
             </div>
           </div>
         </aside>
+        </>
       )}
 
       <main className="chat-area">

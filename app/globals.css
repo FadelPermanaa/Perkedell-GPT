@@ -424,3 +424,62 @@ html, body {
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* ===== MOBILE / HANDPHONE ===== */
+/* Backdrop default disembunyikan, hanya muncul di layar kecil */
+.sidebar-backdrop {
+  display: none;
+}
+
+/* Sidebar jadi overlay yang menutupi dari samping, bukan ngedorong chat */
+@media (max-width: 768px) {
+  .app {
+    position: relative;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    z-index: 40;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Backdrop gelap di belakang sidebar biar gampang nutup */
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 30;
+    display: block;
+  }
+
+  .chat-area {
+    min-width: 0;
+  }
+
+  .messages {
+    padding: 16px;
+  }
+
+  .message {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .message.user .bubble,
+  .message.assistant .bubble {
+    max-width: 88%;
+  }
+
+  .top-bar {
+    padding: 0 12px;
+  }
+
+  .input-bar-wrapper {
+    padding: 12px 12px 16px;
+  }
+}
