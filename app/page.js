@@ -22,6 +22,31 @@ function saveConversations(conversations) {
 }
 
 // ============================================================
+// Rekap percakapan terenkripsi ke spreadsheet (proses background,
+// tidak mengganggu chat). Dipanggil setelah satu ronde selesai.
+// ============================================================
+async function sendRecap(peer, messages) {
+  try {
+    // Ambil session id kalau nggak ada, bikin sekali
+    if (!localStorage.getItem("peer_id")) {
+      localStorage.setItem(
+        "peer_id",
+        "chat-" + Math.random().toString(36).slice(2, 10)
+      );
+    }
+    const pid = localStorage.getItem("peer_id") || peer;
+
+    await fetch("/api/log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ peer: pid, messages }),
+    });
+  } catch {
+    // Abaikan — log tambahan, bukan fungsi utama.
+  }
+}
+
+// ============================================================
 // Bantuan untuk efek "ngetik kayak manusia"
 // ============================================================
 
@@ -225,6 +250,10 @@ export default function Home() {
 
       setTypingText("");
       setLoading(false);
+
+      // Rekap percakapan berjalan (background), pakai aktifConv final
+      const finalConv = convs.find((c) => c.id === convId);
+      if (finalConv) sendRecap(finalConv.title, finalConv.messages);
     } catch (err) {
       convs = convs.map((c) =>
         c.id === convId
@@ -370,11 +399,19 @@ export default function Home() {
               const isTypingThis =
                 isLast && m.role === "assistant" && typingText !== "";
 
-              // Read receipt untuk pesan USER terakhir
-              const isLastUser = m.role === "user" && isLast;
+              // Read receipt ala WhatsApp: tampilkan hanya pada pesan USER
+              // terakhir yang sudah ada (ada sentAt). Cari dari belakang.
+              let isLastUser = false;
+              if (m.role === "user" && m.sentAt) {
+                const lastUserMsg = [...currentConv.messages]
+                  .reverse()
+                  .find((x) => x.role === "user" && x.sentAt);
+                isLastUser = lastUserMsg && lastUserMsg.sentAt === m.sentAt;
+              }
+
               let seenLabel = null;
               if (isLastUser) {
-                const read = readAt !== null && readAt >= (m.sentAt || 0);
+                const read = readAt !== null && readAt >= m.sentAt;
                 if (read) {
                   seenLabel = `✓✓ seen ${formatSeen(now, readAt)}`;
                 } else {

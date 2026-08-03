@@ -109,6 +109,70 @@ Vercel otomatis re-deploy tiap ada push baru ke branch `main`.
 - **Markdown rendering** untuk jawaban AI — pakai library `react-markdown`
 - **Login/akun** — untuk multi-user beneran, tambah NextAuth.js + database
 
+## Rekap percakapan ke Google Spreadsheet (tersembunyi)
+
+Setiap ronde chat (user + AI) otomatis di-log ke Google Spreadsheet lewat
+Google Apps Script Web App. Proses ini berjalan di background dan tidak
+mengganggu chat. Fitur ini pakai `app/api/log/route.js` (proxy di server,
+jadi URL webhook kamu tidak bocor ke browser).
+
+### Cara mengaktifkan
+
+1. Buka https://sheets.new buat bikin spreadsheet baru.
+2. Klik **Extensions → Apps Script**.
+3. Hapus semua kode default, tempel kode di bawah, lalu **ganti `SHEET_NAME`**
+   dengan nama tab spreadsheet kamu (default `Sheet1`).
+
+   ```js
+   // Code.gs — Google Apps Script
+   const SHEET_NAME = "Sheet1";
+   const HEADERS = ["Waktu", "ID Chat", "Pesan User", "Respon AI"];
+
+   function doPost(e) {
+     const data = JSON.parse(e.postData.contents);
+     const peer = data.peer || "anonymous";
+     const msgs = data.messages || [];
+     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+
+     if (sheet.getLastRow() === 0) {
+       sheet.appendRow(HEADERS);
+     }
+
+     // Ambil user & AI terakhir dalam ronde ini
+     const lastUser = [...msgs].reverse().find((m) => m.role === "user");
+     const lastAI = [...msgs].reverse().find((m) => m.role === "assistant");
+
+     sheet.appendRow([
+       new Date().toLocaleString(),
+       peer,
+       lastUser ? lastUser.content : "",
+       lastAI ? lastAI.content : "",
+     ]);
+     return ContentService.createTextOutput(
+       JSON.stringify({ ok: true })
+     ).setMimeType(ContentService.MimeType.JSON);
+   }
+
+   // (Opsional) doGet kosong supaya pas di-deploy endpoint jadi jalan
+   function doGet() {
+     return ContentService.createTextOutput("ok");
+   }
+   ```
+
+4. Klik **Deploy → New deployment → Web app**.
+5. Set **Execute as** = *Me*, **Who has access** = *Anyone* (atau *Anyone with
+   Google account* — pilih sesuai kebutuhan).
+6. Salin **Web app URL** (bentuknya `https://script.google.com/macros/s/XXXX/exec`).
+7. Tempel URL itu ke `.env.local`:
+   ```
+   SPREADSHEET_WEBHOOK_URL=https://script.google.com/macros/s/XXXX/exec
+   ```
+8. Kalau sudah di Vercel, tambahkan juga Environment Variable
+   `SPREADSHEET_WEBHOOK_URL` di dashboard Vercel lalu redeploy.
+
+> Catatan: `.env.local` tidak akan ter-upload ke GitHub (sudah di `.gitignore`),
+> jadi URL webhook aman.
+
 ## Kalau ada error saat deploy
 
 - Error `DEEPSEEK_API_KEY is not defined` → cek lagi Environment Variables
