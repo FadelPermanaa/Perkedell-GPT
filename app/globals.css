@@ -332,6 +332,17 @@ html, body {
   max-width: 80%;
 }
 
+/* Label read-receipt ala WhatsApp di dalam bubble user */
+.seen-label {
+  display: block;
+  font-size: 10.5px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 3px;
+  text-align: right;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 .message.assistant {
   display: flex;
   flex-direction: column;
@@ -368,6 +379,27 @@ html, body {
 }
 .typing span:nth-child(2) { animation-delay: 0.15s; }
 .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+/* Bubble yang lagi "diketik" — kursor blok berkedip di ujung teks */
+.typing-live {
+  border-right: 2px solid var(--cyan);
+  word-break: break-word;
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 1px;
+  background: var(--cyan);
+  vertical-align: text-bottom;
+  animation: caret-blink 0.9s infinite step-end;
+  flex: 0 0 auto;
+}
+@keyframes caret-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
 
 @keyframes bounce {
   0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
